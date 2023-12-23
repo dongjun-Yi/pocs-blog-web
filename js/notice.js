@@ -1,6 +1,6 @@
-const notice = document.querySelector("#notice table");
-const thead = document.querySelector("#notice table thead");
-const tbody = document.querySelector("#notice table tbody");
+const notice = document.querySelector('#notice table');
+const thead = document.querySelector('#notice table thead');
+const tbody = document.querySelector('#notice table tbody');
 
 let category;
 let notice_Id;
@@ -13,56 +13,56 @@ const first = 0;
 let totalPage;
 
 let url = `http://34.64.161.55:80/api/posts?id=notice&offset=${offset}&pageNum=${currentPage}`;
-let sessiontoken = localStorage.getItem("sessionToken");
-let header = new Headers({ "x-pocs-session-token": sessiontoken });
+let sessiontoken = localStorage.getItem('sessionToken');
+let header = new Headers({ 'x-pocs-session-token': sessiontoken });
 
-const userType = localStorage.getItem("userType");
+const userType = localStorage.getItem('userType');
+
+function renderNoticePage(data) {
+  thead.innerHTML = `<tr class="post-list">
+            <th>번호</th>
+            <th>제목</th>
+            <th>작성자</th>
+            <th>작성일</th>
+            <th>카테고리</th>
+        </tr>`;
+  tbody.innerHTML = '';
+  if (data.data === null) {
+    tbody.innerHTML = '<tr><td>0</td><td>글을 작성하세요.</td><td></td></tr>';
+  } else {
+    totalPage = Math.ceil(data.data.categories[1].count / 15);
+    for (let i = 0; i < data.data.posts.length; i++) {
+      if (data.data.posts[i].onlyMember && userType === 'anonymous') {
+        tbody.innerHTML += `
+              <tr class="post-list">
+              <td>${data.data.posts[i].postId}</td>
+              <td>비공개</td>
+              <td></td>
+              <td></td>
+              <td></td>
+              </tr>
+              `;
+      } else {
+        tbody.innerHTML += `
+              <tr class="post-list">
+              <td>${data.data.posts[i].postId}</td>
+              <td onclick="window.location.href='notices_detail.html?postId=${data.data.posts[i].postId}'"
+                  style="cursor:pointer">${data.data.posts[i].title}</td>
+              <td>${data.data.posts[i].writerName}</td>
+              <td>${data.data.posts[i].createdAt}</td>
+              <td>${data.data.posts[i].category}</td>
+              </tr>
+              `;
+      }
+    }
+  }
+}
 
 //공지사항 목록 조회
 async function fetchNotice() {
-  await fetch(url, { headers: header })
-    .then((response) => response.json())
-    .then((data) => {
-      console.log(data);
-      thead.innerHTML = `<tr class="post-list">
-                <th>번호</th>
-                <th>제목</th>
-                <th>작성자</th>
-                <th>작성일</th>
-                <th>카테고리</th>
-            </tr>`;
-      tbody.innerHTML = "";
-      if (data.data === null) {
-        tbody.innerHTML =
-          "<tr><td>0</td><td>글을 작성하세요.</td><td></td></tr>";
-      } else {
-        totalPage = Math.ceil(data.data.categories[1].count / 15);
-        for (let i = 0; i < data.data.posts.length; i++) {
-          if (data.data.posts[i].onlyMember && userType === "anonymous") {
-            tbody.innerHTML += `
-                <tr class="post-list">
-                <td>${data.data.posts[i].postId}</td>
-                <td>비공개</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                </tr>
-                `;
-          } else {
-            tbody.innerHTML += `
-                <tr class="post-list">
-                <td>${data.data.posts[i].postId}</td>
-                <td onclick="window.location.href='notices_detail.html?postId=${data.data.posts[i].postId}'"
-                    style="cursor:pointer">${data.data.posts[i].title}</td>
-                <td>${data.data.posts[i].writerName}</td>
-                <td>${data.data.posts[i].createdAt}</td>
-                <td>${data.data.posts[i].category}</td>
-                </tr>
-                `;
-          }
-        }
-      }
-    });
+  let response = await fetch(url, { headers: header });
+  let data = await response.json();
+  await renderNoticePage(data);
   await showPagination();
 }
 
@@ -82,7 +82,7 @@ function showPagination() {
   let first_num = last - 4 <= 0 ? 1 : last - 4;
   for (let i = first_num; i <= last; i++) {
     pageHTML += `<li class="page-item ${
-      currentPage == i ? "active" : ""
+      currentPage == i ? 'active' : ''
     }"><a class="page-link" onclick="movePage(${i})">${i}</a></li>`;
   }
 
@@ -90,7 +90,7 @@ function showPagination() {
                     <a class="page-link" href="#" onclick="moveNextPage()">Next</a>
                 </li>`;
 
-  document.querySelector("#notice-pagination-bar").innerHTML = pageHTML;
+  document.querySelector('#notice-pagination-bar').innerHTML = pageHTML;
 }
 
 async function movePage(pageNum) {
@@ -122,11 +122,11 @@ async function movePreviousPage() {
 
 //목록으로 버튼을 누르면 다시 공지사항목록으로 복귀
 function backToList() {
-  window.location.href = "../html/notices.html";
+  window.location.href = '../html/notices.html';
 }
 
 function moveNoticeAddPage() {
-  window.location.href = "../html/notices_add.html";
+  window.location.href = '../html/notices_add.html';
 }
 
 fetchNotice();
