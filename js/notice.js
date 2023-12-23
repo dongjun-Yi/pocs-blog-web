@@ -19,6 +19,7 @@ let header = new Headers({ 'x-pocs-session-token': sessiontoken });
 const userType = localStorage.getItem('userType');
 
 function renderNoticePage(data) {
+  const pageLength = data.data.posts.length;
   thead.innerHTML = `<tr class="post-list">
             <th>번호</th>
             <th>제목</th>
@@ -30,8 +31,8 @@ function renderNoticePage(data) {
   if (data.data === null) {
     tbody.innerHTML = '<tr><td>0</td><td>글을 작성하세요.</td><td></td></tr>';
   } else {
-    totalPage = Math.ceil(data.data.categories[1].count / 15);
-    for (let i = 0; i < data.data.posts.length; i++) {
+    totalPage = Math.ceil(data.data.categories[1].count / offset);
+    for (let i = 0; i < pageLength; i++) {
       if (data.data.posts[i].onlyMember && userType === 'anonymous') {
         tbody.innerHTML += `
               <tr class="post-list">
