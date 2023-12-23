@@ -20,6 +20,7 @@ const userType = localStorage.getItem('userType');
 
 function renderNoticePage(data) {
   const pageLength = data.data.posts.length;
+  const categoriesCount = data.data.categories[1].count;
   thead.innerHTML = `<tr class="post-list">
             <th>번호</th>
             <th>제목</th>
@@ -31,7 +32,7 @@ function renderNoticePage(data) {
   if (data.data === null) {
     tbody.innerHTML = '<tr><td>0</td><td>글을 작성하세요.</td><td></td></tr>';
   } else {
-    totalPage = Math.ceil(data.data.categories[1].count / offset);
+    totalPage = Math.ceil(categoriesCount / offset);
     for (let i = 0; i < pageLength; i++) {
       if (data.data.posts[i].onlyMember && userType === 'anonymous') {
         tbody.innerHTML += `
@@ -94,31 +95,31 @@ function showPagination() {
   document.querySelector('#notice-pagination-bar').innerHTML = pageHTML;
 }
 
-async function movePage(pageNum) {
-  if (pageNum > totalPage) return;
-  //이동할 페이지가 이미 그 페이지라면
-  if (currentPage === pageNum) return;
-  currentPage = pageNum;
+async function updatePageAndDisplay() {
   url = `http://34.64.161.55:80/api/posts?id=notice&offset=${offset}&pageNum=${currentPage}`;
   await fetchNotice();
   await showPagination();
 }
 
+async function movePage(pageNum) {
+  if (pageNum > totalPage) return;
+  //이동할 페이지가 이미 그 페이지라면
+  if (currentPage === pageNum) return;
+  currentPage = pageNum;
+  await updatePageAndDisplay();
+}
+
 async function moveNextPage() {
   if (currentPage >= totalPage) return;
   currentPage++;
-  url = `http://34.64.161.55:80/api/posts?id=notice&offset=${offset}&pageNum=${currentPage}`;
-  await fetchNotice();
-  await showPagination();
+  await updatePageAndDisplay();
 }
 
 async function movePreviousPage() {
   //뒤로갈페이지가 1보다 작거나 같을경우 그냥 return
   if (currentPage <= 1) return;
   currentPage--;
-  url = `http://34.64.161.55:80/api/posts?id=notice&offset=${offset}&pageNum=${currentPage}`;
-  await fetchNotice();
-  await showPagination();
+  await updatePageAndDisplay();
 }
 
 //목록으로 버튼을 누르면 다시 공지사항목록으로 복귀
