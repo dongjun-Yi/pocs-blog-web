@@ -1,17 +1,22 @@
 const Url = window.location.href;
-const arr = Url.split("?postId=");
+const arr = Url.split('?postId=');
 const id = arr[1];
 console.log(id);
 
-let sessiontoken = localStorage.getItem("sessionToken");
-let header = new Headers({ "x-pocs-session-token": sessiontoken });
+let sessiontoken = localStorage.getItem('sessionToken');
+let header = new Headers({ 'x-pocs-session-token': sessiontoken });
+
+const SUCCESS_CODE = 201;
+const FORBIDDEN_CODE = 403;
+const NOT_FOUNT_CODE = 404;
+const SERVER_ERROR_CODE = 500;
 
 //공지사항 상세페이지 구현
 async function NoticeDetailPage() {
-  const notice_title_first = document.querySelector(".notice-title-first");
-  const notice_title_second = document.querySelector(".notice-title-second");
+  const notice_title_first = document.querySelector('.notice-title-first');
+  const notice_title_second = document.querySelector('.notice-title-second');
   const notice_detail_content = document.querySelector(
-    ".notice-detail-content"
+    '.notice-detail-content'
   );
   const d_url = `http://34.64.161.55:80/api/posts/${id}`;
 
@@ -19,15 +24,19 @@ async function NoticeDetailPage() {
     .then((response) => response.json())
     .then((data) => {
       console.log(data);
-      if (data.status === 403 || data.status === 404 || data.status === 500) {
-        notice_title_first.innerHTML = "삭제되었거나 없는 게시글입니다.";
-        notice_title_second.innerHTML = "";
-        posts_buttons.classList.add("hidden");
+      if (
+        data.status === FORBIDDEN_CODE ||
+        data.status === NOT_FOUNT_CODE ||
+        data.status === SERVER_ERROR_CODE
+      ) {
+        notice_title_first.innerHTML = '삭제되었거나 없는 게시글입니다.';
+        notice_title_second.innerHTML = '';
+        posts_buttons.classList.add('hidden');
       } else {
         notice_title_first.innerHTML = `<h3>[<span id="title_category">${data.data.category}</span>]${data.data.title}</h3>`;
         notice_title_second.innerHTML = `
                 <div class="me-2">${
-                  data.data.onlyMember ? "회원 전용 | " : ""
+                  data.data.onlyMember ? '회원 전용 | ' : ''
                 }</div>
                 <div class="me-2">${
                   data.data.updatedAt || data.data.createdAt
@@ -39,7 +48,7 @@ async function NoticeDetailPage() {
           data.data.content
         )}</div>`;
         userId = data.data.writer.userId;
-        qaWriterId = "";
+        qaWriterId = '';
       }
     });
 }
@@ -51,10 +60,10 @@ async function DeleteNotice() {
   };
 
   const options = {
-    method: "PATCH",
+    method: 'PATCH',
     headers: {
-      "Content-Type": "application/json",
-      "x-pocs-session-token": sessionToken,
+      'Content-Type': 'application/json',
+      'x-pocs-session-token': sessionToken,
     },
     body: JSON.stringify(sendData),
   };
@@ -67,7 +76,7 @@ async function DeleteNotice() {
   console.log(result.status);
 
   //삭제 성공(result.status===201)하면
-  if (result.status === 201) {
+  if (result.status === SUCCESS_CODE) {
     backToList();
   } else {
     console.log(result.message);
@@ -76,7 +85,7 @@ async function DeleteNotice() {
 
 //목록으로 버튼을 누르면 다시 공지사항목록으로 복귀
 function backToList() {
-  window.location.href = "../html/notices.html";
+  window.location.href = '../html/notices.html';
 }
 
 //공지사항 수정 페이지
