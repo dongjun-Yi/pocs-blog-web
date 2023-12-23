@@ -66,7 +66,7 @@ async function fetchNotice() {
   await showPagination();
 }
 
-//pgaination 구현
+//pagination 구현
 function showPagination() {
   let pageHTML = `<ul class="pagination justify-content-center">
                 <li class="page-item">
