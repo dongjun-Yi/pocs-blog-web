@@ -1,18 +1,20 @@
 const Url = window.location.href;
-const arr = Url.split("?postId=");
+const arr = Url.split('?postId=');
 const id = arr[1];
 const url = `http://34.64.161.55:80/api/posts/${id}`;
-let sessiontoken = localStorage.getItem("sessionToken");
-let header = new Headers({ "x-pocs-session-token": sessiontoken });
+let sessiontoken = localStorage.getItem('sessionToken');
+let header = new Headers({ 'x-pocs-session-token': sessiontoken });
 
 let user_Id;
 
 let category;
 
 //공지사항 제목, 공지사항 내용 가져오기
-const notice_title = document.querySelector("#title");
-const notice_content = document.querySelector("#content");
-const flexCheckDefault = document.querySelector("#flexCheckDefault");
+const notice_title = document.querySelector('#title');
+const notice_content = document.querySelector('#content');
+const flexCheckDefault = document.querySelector('#flexCheckDefault');
+
+const REDIRECT_CODE = 302;
 
 function NoticeEditPage() {
   fetch(url, { headers: header })
@@ -38,10 +40,10 @@ async function noticeEdit() {
   };
 
   const options = {
-    method: "PATCH",
+    method: 'PATCH',
     headers: {
-      "Content-Type": "application/json",
-      "x-pocs-session-token": sessionToken,
+      'Content-Type': 'application/json',
+      'x-pocs-session-token': sessionToken,
     },
     body: JSON.stringify(sendData),
   };
@@ -51,7 +53,7 @@ async function noticeEdit() {
     options
   );
   const result = await response.json();
-  if (result.status === 302) {
+  if (result.status === REDIRECT_CODE) {
     backToList();
   } else {
     console.log(result.message);
@@ -59,7 +61,7 @@ async function noticeEdit() {
 }
 //목록으로 버튼을 누르면 다시 공지사항목록으로 복귀
 function backToList() {
-  window.location.href = "../html/notices.html";
+  window.location.href = '../html/notices.html';
 }
 
 NoticeEditPage();
