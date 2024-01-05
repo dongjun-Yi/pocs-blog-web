@@ -1,16 +1,16 @@
-let sessiontoken = localStorage.getItem("sessionToken");
-let header = new Headers({ "x-pocs-session-token": sessiontoken });
+let sessiontoken = localStorage.getItem('sessionToken');
+let header = new Headers({ 'x-pocs-session-token': sessiontoken });
 let post_data;
 
 //공지사항에 필요한 dom
-const notice = document.querySelector("#notice table");
-const notice_thead = document.querySelector("#notice table thead");
-const notice_tbody = document.querySelector("#notice table tbody");
+const notice = document.querySelector('#notice table');
+const notice_thead = document.querySelector('#notice table thead');
+const notice_tbody = document.querySelector('#notice table tbody');
 
 //회원목록에 필요한 dom
-const user = document.querySelector("#user table");
-const user_thead = document.querySelector("#user table thead");
-const user_tbody = document.querySelector("#user table tbody");
+const user = document.querySelector('#user table');
+const user_thead = document.querySelector('#user table thead');
+const user_tbody = document.querySelector('#user table tbody');
 
 //공지사항 pagination에 필요한 변수
 let Notice_currentPage = 1;
@@ -26,6 +26,8 @@ const offset = 15;
 let post_url = `http://34.64.161.55:80/api/admin/posts?offset=${offset}&pageNum=${Notice_currentPage}`;
 let user_url = `http://34.64.161.55:80/api/admin/users?offset=${offset}&pageNum=${User_currentPage}`;
 
+const MEMBER_TYPE_ANONYMOUS = 'anonymous';
+
 async function fetchNotice() {
   await fetch(post_url, { headers: header })
     .then((response) => response.json())
@@ -40,11 +42,11 @@ async function fetchNotice() {
                 <th>작성일</th>
                 <th>카테고리</th>
             </tr>`;
-      notice_tbody.innerHTML = "";
+      notice_tbody.innerHTML = '';
 
       if (data.data === null) {
         notice_tbody.innerHTML =
-          "<tr><td>0</td><td>글을 작성하세요.</td><td></td></tr>";
+          '<tr><td>0</td><td>글을 작성하세요.</td><td></td></tr>';
       } else {
         Notice_totalPage = Math.ceil(
           (data.data.categories[0].count +
@@ -61,7 +63,7 @@ async function fetchNotice() {
                 <td>${data.data.posts[i].postId}</td>
                 <td onclick="moveNoticeDetailPage(${post_data[i].postId})"
                     >${post_data[i].title}</td>
-                <td>${post_data[i].writerName || "익명"}</td>
+                <td>${post_data[i].writerName || '익명'}</td>
                 <td>${post_data[i].createdAt}</td>
                 <td>${post_data[i].category}</td>
                 </tr>
@@ -76,7 +78,6 @@ async function fetchUser() {
   await fetch(user_url, { headers: header })
     .then((response) => response.json())
     .then((data) => {
-      console.log(data);
       user_thead.innerHTML = `
                 <tr class="user-list">
                 <th>번호</th>
@@ -84,14 +85,14 @@ async function fetchUser() {
                 <th>학번</th>
                 <th>e-mail</th>
                 </tr>`;
-      user_tbody.innerHTML = "";
+      user_tbody.innerHTML = '';
       if (data.data.users === null) {
         user_tbody.innerHTML =
-          "<tr><td>유저를</td><td>추가</td><td>하세요.</td><td></td></tr>";
+          '<tr><td>유저를</td><td>추가</td><td>하세요.</td><td></td></tr>';
       } else {
-        User_totalPage = Math.ceil(data.data.countAllUsers / 15);
+        User_totalPage = Math.ceil(data.data.countAllUsers / offset);
         for (let i = 0; i < data.data.users.length; i++) {
-          if (data.data.users[i].type === "anonymous") {
+          if (data.data.users[i].type === MEMBER_TYPE_ANONYMOUS) {
             user_tbody.innerHTML += `
                 <tr class="user-list">
                     <td>${data.data.users[i].userId}</td>
@@ -101,8 +102,8 @@ async function fetchUser() {
                         style="cursor:pointer">익명${
                           data.data.users[i].userId
                         }</td>
-                    <td>${""}</td>
-                    <td>${""}</td>
+                    <td>${''}</td>
+                    <td>${''}</td>
                 </tr>
                 `;
           } else {
@@ -116,8 +117,8 @@ async function fetchUser() {
                       data.data.users[i].defaultInfo.name ||
                       `익명${data.data.users[i].userId}`
                     }</td>
-                    <td>${data.data.users[i].defaultInfo.studentId || " "}</td>
-                    <td>${data.data.users[i].defaultInfo.email || " "}</td>
+                    <td>${data.data.users[i].defaultInfo.studentId || ' '}</td>
+                    <td>${data.data.users[i].defaultInfo.email || ' '}</td>
                 </tr>
                 `;
           }
@@ -142,7 +143,7 @@ function showNoticePagination() {
   let first_num = last - 4 <= 0 ? 1 : last - 4;
   for (let i = first_num; i <= last; i++) {
     pageHTML += `<li class="page-item ${
-      Notice_currentPage == i ? "active" : ""
+      Notice_currentPage == i ? 'active' : ''
     }"><a class="page-link" onclick="moveAdminNoticePage(${i})">${i}</a></li>`;
   }
 
@@ -150,7 +151,7 @@ function showNoticePagination() {
                     <a class="page-link" href="#" onclick="moveNextNoticePage()">Next</a>
                 </li>`;
 
-  document.querySelector("#notice-pagination-bar").innerHTML = pageHTML;
+  document.querySelector('#notice-pagination-bar').innerHTML = pageHTML;
 }
 
 function moveAdminNoticePage(pageNum) {
@@ -194,7 +195,7 @@ function showUserPagination() {
   let first_num = last - 4 <= 0 ? 1 : last - 4;
   for (let i = first_num; i <= last; i++) {
     pageHTML += `<li class="page-item ${
-      User_currentPage == i ? "active" : ""
+      User_currentPage == i ? 'active' : ''
     }"><a class="page-link" onclick="moveAdminUserPage(${i})">${i}</a></li>`;
   }
 
@@ -202,7 +203,7 @@ function showUserPagination() {
                     <a class="page-link" href="#" onclick="moveNextUserPage()">Next</a>
                 </li>`;
 
-  document.querySelector("#user-pagination-bar").innerHTML = pageHTML;
+  document.querySelector('#user-pagination-bar').innerHTML = pageHTML;
 }
 
 function moveAdminUserPage(pageNum) {
@@ -232,11 +233,11 @@ function movePreviousUserPage() {
 }
 
 function moveUserAddPage() {
-  window.location.href = "../html/user_add.html";
+  window.location.href = '../html/user_add.html';
 }
 
 function moveNoticeAddPage() {
-  window.location.href = "../html/notices_add.html";
+  window.location.href = '../html/notices_add.html';
 }
 
 function moveUserDetailPage(Id) {
