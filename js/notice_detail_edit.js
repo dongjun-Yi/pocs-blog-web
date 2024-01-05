@@ -20,13 +20,11 @@ function NoticeEditPage() {
   fetch(url, { headers: header })
     .then((response) => response.json())
     .then((data) => {
-      console.log(data);
       notice_title.value = `${data.data.title}`;
       notice_content.value = `${data.data.content}`;
       flexCheckDefault.checked = data.data.onlyMember;
       user_Id = data.data.writer.userId;
       category = data.data.category;
-      console.log(user_Id);
     });
 }
 //공지사항 수정하기 버튼 눌렀을때 호출되는 함수

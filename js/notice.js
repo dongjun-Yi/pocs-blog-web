@@ -18,6 +18,8 @@ let header = new Headers({ 'x-pocs-session-token': sessiontoken });
 
 const userType = localStorage.getItem('userType');
 
+const MEMBER_TYPE_ANONYMOUS = 'anonymous';
+
 function renderNoticePage(data) {
   const pageLength = data.data.posts.length;
   const categoriesCount = data.data.categories[1].count;
@@ -34,7 +36,7 @@ function renderNoticePage(data) {
   } else {
     totalPage = Math.ceil(categoriesCount / offset);
     for (let i = 0; i < pageLength; i++) {
-      if (data.data.posts[i].onlyMember && userType === 'anonymous') {
+      if (data.data.posts[i].onlyMember && userType === MEMBER_TYPE_ANONYMOUS) {
         tbody.innerHTML += `
               <tr class="post-list">
               <td>${data.data.posts[i].postId}</td>

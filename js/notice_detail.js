@@ -74,7 +74,6 @@ async function DeleteNotice() {
     options
   );
   const result = await response.json();
-  console.log(result.status);
 
   //삭제 성공(result.status===201)하면
   if (result.status === SUCCESS_CODE) {
