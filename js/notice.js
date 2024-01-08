@@ -2,40 +2,28 @@ const notice = document.querySelector('#notice table');
 const thead = document.querySelector('#notice table thead');
 const tbody = document.querySelector('#notice table tbody');
 
-let category;
-let notice_Id;
-let userId;
-
-//pagination에 필요한 변수
-const offset = 15;
+// pagination에 필요한 변수
+const OFFSET = 15;
 let currentPage = 1;
-const first = 0;
 let totalPage;
 
-let url = `http://34.64.161.55:80/api/posts?id=notice&offset=${offset}&pageNum=${currentPage}`;
+const userType = localStorage.getItem('userType');
+const MEMBER_TYPE_ANONYMOUS = 'anonymous';
+
+let url = `http://34.64.161.55:80/api/posts?id=notice&offset=${OFFSET}&pageNum=${currentPage}`;
 let sessiontoken = localStorage.getItem('sessionToken');
 let header = new Headers({ 'x-pocs-session-token': sessiontoken });
 
-const userType = localStorage.getItem('userType');
-
-const MEMBER_TYPE_ANONYMOUS = 'anonymous';
-
 function renderNoticePage(data) {
-  const pageLength = data.data.posts.length;
-  const categoriesCount = data.data.categories[1].count;
-  thead.innerHTML = `<tr class="post-list">
-            <th>번호</th>
-            <th>제목</th>
-            <th>작성자</th>
-            <th>작성일</th>
-            <th>카테고리</th>
-        </tr>`;
+  const PAGE_LENGTH = data.data.posts.length;
+  const CATEGORIES_COUNT = data.data.categories[1].count;
+
   tbody.innerHTML = '';
   if (data.data === null) {
     tbody.innerHTML = '<tr><td>0</td><td>글을 작성하세요.</td><td></td></tr>';
   } else {
-    totalPage = Math.ceil(categoriesCount / offset);
-    for (let i = 0; i < pageLength; i++) {
+    totalPage = Math.ceil(CATEGORIES_COUNT / OFFSET);
+    for (let i = 0; i < PAGE_LENGTH; i++) {
       if (data.data.posts[i].onlyMember && userType === MEMBER_TYPE_ANONYMOUS) {
         tbody.innerHTML += `
               <tr class="post-list">
@@ -98,7 +86,7 @@ function showPagination() {
 }
 
 async function updatePageAndDisplay() {
-  url = `http://34.64.161.55:80/api/posts?id=notice&offset=${offset}&pageNum=${currentPage}`;
+  url = `http://34.64.161.55:80/api/posts?id=notice&offset=${OFFSET}&pageNum=${currentPage}`;
   await fetchNotice();
   await showPagination();
 }
