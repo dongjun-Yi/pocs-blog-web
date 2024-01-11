@@ -1,0 +1,29 @@
+.hidden {
+  display: none !important;
+}
+
+.navbar{
+  position: sticky; 
+  top: 0; 
+  height: auto; 
+  z-index: 10;
+}
+
+.navbar-brand{
+  cursor: pointer;
+}
+
+.nav-link{
+  cursor: pointer;
+}
+
+.carousel-item img{
+  height: 500px;
+}
+ 
+.notice-list div{
+  margin-bottom: 1em;
+}
+.notice-list div h1 span{
+  color: cornflowerblue;
+}
