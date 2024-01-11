@@ -1,7 +1,9 @@
-const Url = window.location.href;
-const arr = Url.split('?postId=');
-const id = arr[1];
-console.log(id);
+const arr = window.location.href.split('?postId=');
+const postId = arr[1];
+
+const notice_title_first = document.querySelector('.notice-title-first');
+const notice_title_second = document.querySelector('.notice-title-second');
+const notice_detail_content = document.querySelector('.notice-detail-content');
 
 let sessiontoken = localStorage.getItem('sessionToken');
 let header = new Headers({ 'x-pocs-session-token': sessiontoken });
@@ -11,42 +13,46 @@ const FORBIDDEN_CODE = 403;
 const NOT_FOUNT_CODE = 404;
 const SERVER_ERROR_CODE = 500;
 
-function renderNoticeDetailPage(data) {
-  const notice_title_first = document.querySelector('.notice-title-first');
-  const notice_title_second = document.querySelector('.notice-title-second');
-  const notice_detail_content = document.querySelector(
-    '.notice-detail-content'
-  );
-  if (
+function isFetchDataNull(data) {
+  return (
     data.status === FORBIDDEN_CODE ||
     data.status === NOT_FOUNT_CODE ||
     data.status === SERVER_ERROR_CODE
-  ) {
-    notice_title_first.innerHTML = '삭제되었거나 없는 게시글입니다.';
-    notice_title_second.innerHTML = '';
-    posts_buttons.classList.add('hidden');
-  } else {
-    notice_title_first.innerHTML = `<h3>[<span id="title_category">${data.data.category}</span>]${data.data.title}</h3>`;
-    notice_title_second.innerHTML = `
-            <div class="me-2">${
-              data.data.onlyMember ? '회원 전용 | ' : ''
-            }</div>
-            <div class="me-2">${
-              data.data.updatedAt || data.data.createdAt
-            }</div>
-            <div class="me-2"> ${data.data.writer.name} </div>
-            <div>조회수 ${data.data.views}</div>
-            `;
-    notice_detail_content.innerHTML = `<div style="min-height: 200px">${marked.parse(
-      data.data.content
-    )}</div>`;
-    userId = data.data.writer.userId;
-    qaWriterId = '';
+  );
+}
+
+function renderNoticeDetailPageWithNonData() {
+  notice_title_first.innerHTML = '삭제되었거나 없는 게시글입니다.';
+  notice_title_second.innerHTML = '';
+  posts_buttons.classList.add('hidden');
+  return;
+}
+
+function renderNoticeDetailPageWithFetchData(data) {
+  notice_title_first.innerHTML = `<h3>[<span id="title_category">${data.data.category}</span>]${data.data.title}</h3>`;
+  notice_title_second.innerHTML = `
+          <div class="me-2">${data.data.onlyMember ? '회원 전용 | ' : ''}</div>
+          <div class="me-2">${data.data.updatedAt || data.data.createdAt}</div>
+          <div class="me-2"> ${data.data.writer.name} </div>
+          <div>조회수 ${data.data.views}</div>
+          `;
+  notice_detail_content.innerHTML = `<div style="min-height: 200px">${marked.parse(
+    data.data.content
+  )}</div>`;
+  userId = data.data.writer.userId;
+  qaWriterId = '';
+}
+
+function renderNoticeDetailPage(data) {
+  if (isFetchDataNull(data)) {
+    renderNoticeDetailPage();
+    return;
   }
+  renderNoticeDetailPageWithFetchData(data);
 }
 
 //공지사항 상세페이지 구현
-async function NoticeDetailPage() {
+async function fetchNoticeDetailPage() {
   const d_url = `http://34.64.161.55:80/api/posts/${id}`;
 
   let response = await fetch(d_url, { headers: header });
@@ -93,4 +99,4 @@ function gotoNoticeEditPage() {
   window.location.href = `../html/notices_detail_edit.html?postId=${id}`;
 }
 
-NoticeDetailPage();
+fetchNoticeDetailPage();
